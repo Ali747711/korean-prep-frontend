@@ -1,0 +1,320 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/outfit";
+@import "@fontsource-variable/space-grotesk";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(0.985 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.648 0.2 131.4);
+  --primary-foreground: oklch(0.985 0.01 130);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.94 0.08 130);
+  --accent-foreground: oklch(0.3 0.1 130);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.648 0.2 131.4);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.97 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.648 0.2 131.4);
+  --sidebar-primary-foreground: oklch(0.985 0.01 130);
+  --sidebar-accent: oklch(0.94 0.08 130);
+  --sidebar-accent-foreground: oklch(0.3 0.1 130);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.648 0.2 131.4);
+
+  /* Learning platform extended tokens */
+  --lp-hero-from: oklch(0.97 0.03 130);
+  --lp-hero-to: oklch(0.99 0.01 140);
+  --lp-lesson-done: oklch(0.648 0.2 131.4);
+  --lp-lesson-done-bg: oklch(0.96 0.05 131);
+  --lp-lesson-next: oklch(0.4 0.14 250);
+  --lp-lesson-next-bg: oklch(0.95 0.04 250);
+  --lp-lesson-locked: oklch(0.75 0 0);
+  --lp-lesson-locked-bg: oklch(0.97 0 0);
+  --lp-streak: oklch(0.72 0.19 50);
+  --lp-streak-bg: oklch(0.97 0.05 60);
+  --lp-category-bar: oklch(0.648 0.2 131.4);
+  --lp-separator: oklch(0.922 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.185 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.185 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.841 0.238 128.85);
+  --primary-foreground: oklch(0.145 0.05 130);
+  --secondary: oklch(0.235 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.235 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.28 0.06 130);
+  --accent-foreground: oklch(0.841 0.238 128.85);
+  --destructive: oklch(0.62 0.21 18);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.841 0.238 128.85);
+  --sidebar: oklch(0.165 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.841 0.238 128.85);
+  --sidebar-primary-foreground: oklch(0.145 0.05 130);
+  --sidebar-accent: oklch(0.28 0.06 130);
+  --sidebar-accent-foreground: oklch(0.841 0.238 128.85);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.841 0.238 128.85);
+
+  /* Dark mode extended tokens */
+  --lp-hero-from: oklch(0.2 0.04 130);
+  --lp-hero-to: oklch(0.17 0.02 140);
+  --lp-lesson-done: oklch(0.841 0.238 128.85);
+  --lp-lesson-done-bg: oklch(0.22 0.07 130);
+  --lp-lesson-next: oklch(0.72 0.14 250);
+  --lp-lesson-next-bg: oklch(0.2 0.05 250);
+  --lp-lesson-locked: oklch(0.45 0 0);
+  --lp-lesson-locked-bg: oklch(0.2 0 0);
+  --lp-streak: oklch(0.82 0.18 55);
+  --lp-streak-bg: oklch(0.22 0.07 60);
+  --lp-category-bar: oklch(0.841 0.238 128.85);
+  --lp-separator: oklch(1 0 0 / 8%);
+}
+
+@theme inline {
+  --font-sans: 'Outfit Variable', sans-serif;
+  --font-heading: 'Space Grotesk Variable', sans-serif;
+  /* map all CSS vars to Tailwind tokens */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground font-sans; }
+  html { scroll-behavior: smooth; }
+}
+
+/* Korean text helper */
+.ko { font-weight: 600; word-break: keep-all; }
+
+/* ── Learning platform design language ── */
+
+/* Section header: category label + rule */
+.lp-section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.lp-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--lp-separator);
+}
+
+/* Lesson state pill */
+.lp-state-done {
+  color: var(--lp-lesson-done);
+  background: var(--lp-lesson-done-bg);
+}
+.lp-state-next {
+  color: var(--lp-lesson-next);
+  background: var(--lp-lesson-next-bg);
+}
+.lp-state-locked {
+  color: var(--lp-lesson-locked);
+  background: var(--lp-lesson-locked-bg);
+}
+
+/* Thin progress track with glow */
+.lp-progress-track {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--muted);
+  overflow: hidden;
+}
+.lp-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--primary);
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 8px var(--primary);
+}
+
+/* Hero gradient banner */
+.lp-hero-banner {
+  background: linear-gradient(135deg, var(--lp-hero-from), var(--lp-hero-to));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+}
+
+/* Streak badge */
+.lp-streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 99px;
+  background: var(--lp-streak-bg);
+  color: var(--lp-streak);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Card hover — physical lift */
+.lp-card-lift {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.lp-card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px oklch(0 0 0 / 0.08);
+}
+.dark .lp-card-lift:hover {
+  box-shadow: 0 6px 24px oklch(0 0 0 / 0.3);
+}
+
+/* Lesson card: completed ring */
+.lp-lesson-done-card {
+  border-color: var(--lp-lesson-done);
+  border-width: 1.5px;
+}
+
+/* Diagonal accent stripe for "next up" card */
+.lp-next-card {
+  position: relative;
+  overflow: hidden;
+}
+.lp-next-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 56px;
+  height: 56px;
+  background: var(--lp-lesson-next-bg);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+}
+
+/* Category progress row */
+.lp-cat-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Vocab day badge */
+.lp-day-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Flashcard flip surface */
+.lp-flip-card {
+  cursor: pointer;
+  user-select: none;
+}
+.lp-flip-card:active {
+  transform: scale(0.99);
+}
+
+/* Answer feedback states */
+.lp-answer-correct {
+  background: var(--lp-lesson-done-bg);
+  color: var(--lp-lesson-done);
+  border-color: var(--lp-lesson-done);
+}
+.lp-answer-wrong {
+  background: oklch(0.97 0.03 27);
+  color: oklch(0.5 0.2 27);
+  border-color: oklch(0.9 0.08 27);
+}
+.dark .lp-answer-wrong {
+  background: oklch(0.22 0.06 27);
+  color: oklch(0.75 0.18 27);
+  border-color: oklch(0.3 0.1 27);
+}
+
+/* Animations */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise { animation: rise 0.4s ease-out both; }
+
+@keyframes rise-stagger {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise-1 { animation: rise-stagger 0.35s 0.05s ease-out both; }
+.animate-rise-2 { animation: rise-stagger 0.35s 0.12s ease-out both; }
+.animate-rise-3 { animation: rise-stagger 0.35s 0.19s ease-out both; }
+.animate-rise-4 { animation: rise-stagger 0.35s 0.26s ease-out both; }
+.animate-rise-5 { animation: rise-stagger 0.35s 0.33s ease-out both; }
+
+@keyframes progress-grow {
+  from { width: 0; }
+}
+.animate-progress { animation: progress-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
