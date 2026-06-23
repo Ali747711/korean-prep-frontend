@@ -1,6 +1,11 @@
 import * as React from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Loading03Icon, VolumeHighIcon, ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons"
+import {
+  Loading03Icon,
+  VolumeHighIcon,
+  ArrowDown01Icon,
+  ArrowUp01Icon,
+} from "@hugeicons/core-free-icons"
 
 import {
   fetchVocabularyWeeks,
@@ -12,7 +17,6 @@ import { fetchTtsAudioUrl } from "@/lib/api"
 import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 
 function useSpeaker() {
   const audioRef = React.useRef<HTMLAudioElement | null>(null)
@@ -42,7 +46,12 @@ function KeywordCard({
   const [open, setOpen] = React.useState(false)
 
   return (
-    <Card className={cn("transition-all duration-150", open && "ring-1 ring-primary/30")}>
+    <Card
+      className={cn(
+        "transition-all duration-150",
+        open && "ring-1 ring-primary/30"
+      )}
+    >
       <CardContent className="py-4">
         {/* Header row — always visible */}
         <button
@@ -51,14 +60,12 @@ function KeywordCard({
           aria-expanded={open}
         >
           {/* Day badge */}
-          <div className="lp-day-badge shrink-0 mt-0.5">
-            {kw.day}
-          </div>
+          <div className="lp-day-badge mt-0.5 shrink-0">{kw.day}</div>
 
           {/* Keyword + meaning */}
           <div className="min-w-0 flex-1">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="ko text-xl font-bold text-primary leading-snug">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <span className="ko text-xl leading-snug font-bold text-primary">
                 {kw.keyword}
               </span>
               {kw.romanization && (
@@ -71,7 +78,7 @@ function KeywordCard({
           </div>
 
           {/* Toggle affordance */}
-          <div className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground mt-0.5">
+          <div className="mt-0.5 flex shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground">
             <span className="hidden sm:inline">
               {open ? "Hide" : `${kw.expressions.length} examples`}
             </span>
@@ -113,7 +120,7 @@ function KeywordCard({
                   </Button>
                 </div>
                 {e.notes && (
-                  <p className="mt-2 border-t pt-2 text-xs leading-relaxed text-muted-foreground whitespace-pre-line">
+                  <p className="mt-2 border-t pt-2 text-xs leading-relaxed whitespace-pre-line text-muted-foreground">
                     {e.notes}
                   </p>
                 )}
@@ -163,7 +170,9 @@ export function Vocabulary() {
     <div className="animate-rise mx-auto max-w-3xl">
       {/* Header */}
       <header className="mb-6">
-        <p className="ko text-xs font-bold text-primary tracking-widest uppercase">단어 공부</p>
+        <p className="ko text-xs font-bold tracking-widest text-primary uppercase">
+          단어 공부
+        </p>
         <h1 className="mt-1 font-heading text-3xl font-bold tracking-tight">
           Vocabulary
         </h1>
@@ -199,14 +208,16 @@ export function Vocabulary() {
                       ? "border-primary bg-primary text-primary-foreground shadow-sm"
                       : hasData
                         ? "border-border bg-card text-foreground hover:border-primary/50 hover:bg-primary/5"
-                        : "border-border bg-muted/30 text-muted-foreground/40 cursor-not-allowed"
+                        : "cursor-not-allowed border-border bg-muted/30 text-muted-foreground/40"
                   )}
                   aria-label={`Week ${w}${!hasData ? " (coming soon)" : ""}`}
                 >
-                  <span className="text-[0.6rem] font-medium opacity-70">Wk</span>
+                  <span className="text-[0.6rem] font-medium opacity-70">
+                    Wk
+                  </span>
                   <span>{w}</span>
                   {!hasData && (
-                    <span className="absolute -top-1 -right-1 size-2 rounded-full bg-muted border border-background" />
+                    <span className="absolute -top-1 -right-1 size-2 rounded-full border border-background bg-muted" />
                   )}
                 </button>
               )
@@ -214,7 +225,8 @@ export function Vocabulary() {
           </div>
           {!availableWeeks.has(activeWeek) && (
             <p className="mt-3 text-xs text-muted-foreground">
-              Week {activeWeek} content is coming soon. Try Week 1 to get started.
+              Week {activeWeek} content is coming soon. Try Week 1 to get
+              started.
             </p>
           )}
         </div>

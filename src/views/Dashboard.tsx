@@ -10,7 +10,6 @@ import {
   ArrowRight01Icon,
   Layers01Icon,
   TextIcon,
-  CheckmarkCircle02Icon,
   Book02Icon,
   ChartBarIncreasingIcon,
   GoalIcon,
@@ -19,7 +18,6 @@ import {
 import { getTipOfTheDay } from "@/data/tips"
 import type { View } from "@/components/Navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { fetchCurriculum, type CurriculumLesson } from "@/lib/curriculum-api"
 
 interface DashboardProps {

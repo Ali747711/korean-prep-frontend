@@ -4,8 +4,6 @@ import {
   Loading03Icon,
   CheckmarkCircle02Icon,
   ArrowRight01Icon,
-  BookOpen01Icon,
-  LockIcon,
 } from "@hugeicons/core-free-icons"
 
 import { fetchCurriculum, type CurriculumLesson } from "@/lib/curriculum-api"
@@ -18,7 +16,7 @@ interface LessonsProps {
   onOpenLesson: (lessonId: string) => void
 }
 
-type LessonState = "done" | "next" | "available" | "locked"
+type LessonState = "done" | "next" | "available"
 
 function getLessonState(
   lesson: CurriculumLesson,
@@ -44,7 +42,7 @@ function LessonCard({ lesson, state, onOpen, animDelay = 0 }: LessonCardProps) {
   return (
     <button
       onClick={onOpen}
-      className="group w-full text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-xl"
+      className="group w-full rounded-xl text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       style={{ animationDelay: `${animDelay}ms` }}
     >
       <Card
@@ -93,7 +91,7 @@ function LessonCard({ lesson, state, onOpen, animDelay = 0 }: LessonCardProps) {
           <div className="min-w-0">
             <p
               className={cn(
-                "font-heading text-sm font-bold leading-snug tracking-tight",
+                "font-heading text-sm leading-snug font-bold tracking-tight",
                 isDone && "text-foreground/80"
               )}
             >
@@ -109,7 +107,8 @@ function LessonCard({ lesson, state, onOpen, animDelay = 0 }: LessonCardProps) {
           {/* Footer */}
           <div className="mt-auto flex items-center justify-between pt-1">
             <span className="text-[0.65rem] text-muted-foreground tabular-nums">
-              {lesson.counts.grammar}G · {lesson.counts.vocab}V · {lesson.counts.pronunciation}P
+              {lesson.counts.grammar}G · {lesson.counts.vocab}V ·{" "}
+              {lesson.counts.pronunciation}P
             </span>
             <HugeiconsIcon
               icon={ArrowRight01Icon}
@@ -168,7 +167,9 @@ export function Lessons({ completedLessonIds, onOpenLesson }: LessonsProps) {
   const categorySummary = React.useMemo(() => {
     const map = new Map<string, { done: number; total: number }>()
     for (const group of groups) {
-      const done = group.lessons.filter((l) => completedSet.has(l.lessonId)).length
+      const done = group.lessons.filter((l) =>
+        completedSet.has(l.lessonId)
+      ).length
       map.set(group.category, { done, total: group.lessons.length })
     }
     return map
@@ -178,7 +179,9 @@ export function Lessons({ completedLessonIds, onOpenLesson }: LessonsProps) {
     <div className="animate-rise mx-auto max-w-5xl">
       {/* Header */}
       <header className="mb-7">
-        <p className="ko text-xs font-bold text-primary tracking-widest uppercase">대화</p>
+        <p className="ko text-xs font-bold tracking-widest text-primary uppercase">
+          대화
+        </p>
         <h1 className="mt-1 font-heading text-3xl font-bold tracking-tight">
           Lessons
         </h1>
@@ -202,8 +205,9 @@ export function Lessons({ completedLessonIds, onOpenLesson }: LessonsProps) {
                 aria-valuemax={lessons.length}
               />
             </div>
-            <span className="shrink-0 text-xs font-semibold tabular-nums text-muted-foreground">
-              <span className="text-primary">{completedSet.size}</span> / {lessons.length}
+            <span className="shrink-0 text-xs font-semibold text-muted-foreground tabular-nums">
+              <span className="text-primary">{completedSet.size}</span> /{" "}
+              {lessons.length}
             </span>
           </div>
         )}
@@ -245,12 +249,10 @@ export function Lessons({ completedLessonIds, onOpenLesson }: LessonsProps) {
               {/* Category header */}
               <div className="mb-4 flex items-center gap-3">
                 <div className="min-w-0">
-                  <h2 className="lp-section-label">
-                    {group.category}
-                  </h2>
+                  <h2 className="lp-section-label">{group.category}</h2>
                 </div>
                 {summary && (
-                  <span className="shrink-0 text-[0.65rem] font-semibold tabular-nums text-muted-foreground">
+                  <span className="shrink-0 text-[0.65rem] font-semibold text-muted-foreground tabular-nums">
                     {summary.done}/{summary.total}
                   </span>
                 )}
@@ -258,7 +260,7 @@ export function Lessons({ completedLessonIds, onOpenLesson }: LessonsProps) {
 
               {/* Thin category progress bar */}
               {summary && summary.total > 0 && (
-                <div className="mb-4 lp-progress-track">
+                <div className="lp-progress-track mb-4">
                   <div
                     className="lp-progress-fill"
                     style={{ width: `${catPct}%` }}
@@ -273,7 +275,11 @@ export function Lessons({ completedLessonIds, onOpenLesson }: LessonsProps) {
               {/* Lesson grid */}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {group.lessons.map((lesson, idx) => {
-                  const state = getLessonState(lesson, completedSet, nextLessonId)
+                  const state = getLessonState(
+                    lesson,
+                    completedSet,
+                    nextLessonId
+                  )
                   return (
                     <LessonCard
                       key={lesson.lessonId}
