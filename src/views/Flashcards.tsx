@@ -185,20 +185,35 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
       </header>
 
       {/* Controls */}
-      <div className="mb-5 flex flex-wrap items-center gap-2">
-        {/* Daily Words toggle */}
-        <Button
-          variant={deckSource === "daily" ? "default" : "outline"}
-          size="sm"
-          onClick={() =>
-            setDeckSource((s) => (s === "daily" ? "curriculum" : "daily"))
-          }
-          className="rounded-xl text-xs font-semibold"
+
+      {/* Row 1: source toggle — segmented pill */}
+      <div className="mb-3 inline-flex gap-1 rounded-xl border bg-muted p-1">
+        <button
+          onClick={() => setDeckSource("curriculum")}
+          className={cn(
+            "rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors",
+            deckSource === "curriculum"
+              ? "bg-card text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          Curriculum
+        </button>
+        <button
+          onClick={() => setDeckSource("daily")}
+          className={cn(
+            "rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors",
+            deckSource === "daily"
+              ? "bg-card text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
         >
           ✦ Daily Words
-        </Button>
+        </button>
+      </div>
 
-        {/* Week selector — only visible in curriculum mode */}
+      {/* Row 2: deck controls — uniform outline style */}
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         {deckSource === "curriculum" && (
           <div className="relative">
             <select
@@ -227,11 +242,11 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
               m === "korean-first" ? "english-first" : "korean-first"
             )
           }
-          className="rounded-xl text-xs"
+          className="h-9 rounded-xl text-sm"
         >
           <HugeiconsIcon
             icon={RefreshIcon}
-            size={13}
+            size={14}
             color="currentColor"
             strokeWidth={2}
             data-icon="inline-start"
@@ -244,11 +259,11 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
           size="sm"
           onClick={() => resetSession(deck)}
           disabled={deck.length === 0}
-          className="rounded-xl text-xs"
+          className="h-9 rounded-xl text-sm"
         >
           <HugeiconsIcon
             icon={ShuffleIcon}
-            size={13}
+            size={14}
             color="currentColor"
             strokeWidth={2}
             data-icon="inline-start"
