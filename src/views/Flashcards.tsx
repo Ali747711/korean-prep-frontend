@@ -13,15 +13,12 @@ import {
 
 import { fetchDeck, type FlashcardItem } from "@/lib/curriculum-api"
 import { fetchTtsAudioUrl } from "@/lib/api"
+import { DailyWordsTab } from "@/components/DailyWordsTab"
+import { fetchDailyWords } from "@/lib/daily-words-api"
 import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  Progress,
-  ProgressLabel,
-  ProgressValue,
-} from "@/components/ui/progress"
 
 interface FlashcardsProps {
   learnedIds: string[]
@@ -55,6 +52,20 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
   const [sessionTotal, setSessionTotal] = React.useState(0)
   const audioRef = React.useRef<HTMLAudioElement | null>(null)
 
+  const today = new Date().toISOString().slice(0, 10)
+  const [deckSource, setDeckSource] = React.useState<"curriculum" | "daily">(
+    "curriculum"
+  )
+  const [dailyDate, setDailyDate] = React.useState(today)
+  const deviceId = React.useMemo(() => {
+    const key = "kp.deviceId"
+    const existing = localStorage.getItem(key)
+    if (existing) return existing
+    const id = crypto.randomUUID()
+    localStorage.setItem(key, id)
+    return id
+  }, [])
+
   const learnedSet = React.useMemo(() => new Set(learnedIds), [learnedIds])
 
   const resetSession = React.useCallback((items: FlashcardItem[]) => {
@@ -66,6 +77,7 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
   }, [])
 
   React.useEffect(() => {
+    if (deckSource !== "curriculum") return
     let cancelled = false
     setLoading(true)
     setNoData(false)
@@ -82,7 +94,33 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
     return () => {
       cancelled = true
     }
-  }, [week, resetSession])
+  }, [week, resetSession, deckSource])
+
+  React.useEffect(() => {
+    if (deckSource !== "daily") return
+    let cancelled = false
+    setLoading(true)
+    setNoData(false)
+    fetchDailyWords(deviceId, dailyDate)
+      .then(({ words }) => {
+        if (cancelled) return
+        if (words.length === 0) {
+          setNoData(true)
+          setDeck([])
+        } else {
+          resetSession(words)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setNoData(true)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [deckSource, dailyDate, deviceId, resetSession])
 
   const card = deck[index]
   const isFinished = !loading && !noData && deck.length > 0 && !card
@@ -116,17 +154,31 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
   const progressPct =
     deck.length > 0 ? Math.round((index / deck.length) * 100) : 0
 
-  const front = card ? (mode === "korean-first" ? card.korean : card.english) : ""
-  const frontSub = card && mode === "korean-first" ? card.romanization : undefined
-  const back = card ? (mode === "korean-first" ? card.english : card.korean) : ""
-  const backSub = card && mode === "english-first" ? card.romanization : undefined
+  const front = card
+    ? mode === "korean-first"
+      ? card.korean
+      : card.english
+    : ""
+  const frontSub =
+    card && mode === "korean-first" ? card.romanization : undefined
+  const back = card
+    ? mode === "korean-first"
+      ? card.english
+      : card.korean
+    : ""
+  const backSub =
+    card && mode === "english-first" ? card.romanization : undefined
 
   return (
     <div className="animate-rise mx-auto max-w-2xl">
       {/* Header */}
       <header className="mb-6">
-        <p className="ko text-xs font-bold text-primary tracking-widest uppercase">플래시카드</p>
-        <h1 className="mt-1 font-heading text-3xl font-bold tracking-tight">Flashcards</h1>
+        <p className="ko text-xs font-bold tracking-widest text-primary uppercase">
+          플래시카드
+        </p>
+        <h1 className="mt-1 font-heading text-3xl font-bold tracking-tight">
+          Flashcards
+        </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
           Flip, listen, and self-grade through the weekly vocabulary.
         </p>
@@ -137,9 +189,16 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
         {/* Week selector */}
         <div className="relative">
           <select
-            value={week}
-            onChange={(e) => setWeek(Number(e.target.value))}
-            className="h-9 appearance-none rounded-xl border bg-card pl-3 pr-8 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
+            value={deckSource === "daily" ? "daily" : week}
+            onChange={(e) => {
+              if (e.target.value === "daily") {
+                setDeckSource("daily")
+              } else {
+                setDeckSource("curriculum")
+                setWeek(Number(e.target.value))
+              }
+            }}
+            className="h-9 appearance-none rounded-xl border bg-card pr-8 pl-3 text-sm font-semibold focus:ring-2 focus:ring-ring focus:outline-none"
             aria-label="Week filter"
           >
             {WEEKS.map((w) => (
@@ -147,8 +206,11 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
                 Week {w}
               </option>
             ))}
+            <option value="daily">✦ Daily Words</option>
           </select>
-          <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">▾</span>
+          <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-xs text-muted-foreground">
+            ▾
+          </span>
         </div>
 
         <Button
@@ -189,6 +251,15 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
         </Button>
       </div>
 
+      {deckSource === "daily" && (
+        <DailyWordsTab
+          deviceId={deviceId}
+          selectedDate={dailyDate}
+          onSelectDate={(d) => setDailyDate(d)}
+          onWordsAdded={(words) => resetSession(words)}
+        />
+      )}
+
       {/* Progress */}
       {deck.length > 0 && (
         <div className="mb-5">
@@ -212,7 +283,9 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
             <div className="mt-2 flex gap-4 text-xs text-muted-foreground">
               <span>
                 Known:{" "}
-                <span className="font-semibold text-primary">{sessionKnown}</span>
+                <span className="font-semibold text-primary">
+                  {sessionKnown}
+                </span>
               </span>
               <span>
                 Reviewing:{" "}
@@ -249,17 +322,24 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
               />
             </div>
             <div>
-              <p className="ko text-2xl text-primary font-bold">잘했어요!</p>
-              <h2 className="mt-1 font-heading text-xl font-bold">Deck Complete</h2>
+              <p className="ko text-2xl font-bold text-primary">잘했어요!</p>
+              <h2 className="mt-1 font-heading text-xl font-bold">
+                Deck Complete
+              </h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 You got{" "}
-                <span className="font-semibold text-foreground">{sessionKnown}</span>{" "}
+                <span className="font-semibold text-foreground">
+                  {sessionKnown}
+                </span>{" "}
                 of{" "}
-                <span className="font-semibold text-foreground">{sessionTotal}</span>{" "}
+                <span className="font-semibold text-foreground">
+                  {sessionTotal}
+                </span>{" "}
                 correct
                 {sessionTotal > 0 && (
                   <>
-                    {" "}·{" "}
+                    {" "}
+                    ·{" "}
                     <span className="font-semibold text-primary">
                       {Math.round((sessionKnown / sessionTotal) * 100)}%
                     </span>
@@ -267,7 +347,10 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
                 )}
               </p>
             </div>
-            <Button onClick={() => resetSession(deck)} className="rounded-xl px-6">
+            <Button
+              onClick={() => resetSession(deck)}
+              className="rounded-xl px-6"
+            >
               <HugeiconsIcon
                 icon={RefreshIcon}
                 size={16}
@@ -284,10 +367,14 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-sm font-medium text-muted-foreground">
-              No cards for Week {week} yet.
+              {deckSource === "daily"
+                ? `No words added yet for ${dailyDate}.`
+                : `No cards for Week ${week} yet.`}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Vocabulary is seeded for Week 1. Try another week or come back soon.
+              {deckSource === "daily"
+                ? `Tap "Add Words" above to get started.`
+                : `Vocabulary is seeded for Week 1. Try another week or come back soon.`}
             </p>
             {week !== 1 && (
               <Button
@@ -306,7 +393,7 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
         <>
           <Card
             onClick={handleFlip}
-            className="lp-flip-card group hover:ring-primary/25 transition-all"
+            className="lp-flip-card group transition-all hover:ring-primary/25"
           >
             <CardContent className="flex min-h-64 flex-col items-center justify-center gap-3 py-10 text-center">
               <Badge variant="secondary" className="text-xs">
@@ -317,7 +404,7 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
                 <>
                   <p
                     className={cn(
-                      "text-4xl font-bold leading-snug sm:text-5xl",
+                      "text-4xl leading-snug font-bold sm:text-5xl",
                       mode === "korean-first" && "ko"
                     )}
                   >
@@ -334,10 +421,12 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
                 </>
               ) : (
                 <>
-                  <p className="text-xs text-muted-foreground line-through">{front}</p>
+                  <p className="text-xs text-muted-foreground line-through">
+                    {front}
+                  </p>
                   <p
                     className={cn(
-                      "text-4xl font-bold leading-snug text-primary sm:text-5xl",
+                      "text-4xl leading-snug font-bold text-primary sm:text-5xl",
                       mode === "english-first" && "ko"
                     )}
                   >
@@ -359,7 +448,7 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
           </Card>
 
           {/* Action buttons */}
-          <div className="mt-4 flex items-center justify-center gap-2 flex-wrap">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -393,7 +482,11 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
             </Button>
 
             {!flipped && (
-              <Button size="sm" onClick={handleFlip} className="rounded-xl px-5">
+              <Button
+                size="sm"
+                onClick={handleFlip}
+                className="rounded-xl px-5"
+              >
                 Flip
                 <HugeiconsIcon
                   icon={ArrowRight01Icon}
