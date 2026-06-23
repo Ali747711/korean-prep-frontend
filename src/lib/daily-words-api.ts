@@ -11,14 +11,29 @@ export interface DailyWord {
 }
 
 async function postJson<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  })
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 30_000)
+  let res: Response
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    })
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error("Request timed out. Please try again.")
+    }
+    throw err
+  } finally {
+    clearTimeout(timeoutId)
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error((err as { error?: string }).error ?? `Request failed: ${res.status}`)
+    throw new Error(
+      (err as { error?: string }).error ?? `Request failed: ${res.status}`
+    )
   }
   return res.json()
 }
@@ -27,7 +42,9 @@ async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`)
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error((err as { error?: string }).error ?? `Request failed: ${res.status}`)
+    throw new Error(
+      (err as { error?: string }).error ?? `Request failed: ${res.status}`
+    )
   }
   return res.json()
 }
@@ -40,18 +57,26 @@ async function putJson<T>(path: string, body: unknown): Promise<T> {
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error((err as { error?: string }).error ?? `Request failed: ${res.status}`)
+    throw new Error(
+      (err as { error?: string }).error ?? `Request failed: ${res.status}`
+    )
   }
   return res.json()
 }
 
 /** Extract words from a Korean word list (one word per entry). */
-export function extractWords(deviceId: string, words: string[]): Promise<DailyWord[]> {
+export function extractWords(
+  deviceId: string,
+  words: string[]
+): Promise<DailyWord[]> {
   return postJson("/api/daily-words/extract", { deviceId, words })
 }
 
 /** Extract words from a base64-encoded screenshot image. */
-export function extractFromImage(deviceId: string, image: string): Promise<DailyWord[]> {
+export function extractFromImage(
+  deviceId: string,
+  image: string
+): Promise<DailyWord[]> {
   return postJson("/api/daily-words/extract", { deviceId, image })
 }
 
