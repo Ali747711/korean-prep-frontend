@@ -186,32 +186,38 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
 
       {/* Controls */}
       <div className="mb-5 flex flex-wrap items-center gap-2">
-        {/* Week selector */}
-        <div className="relative">
-          <select
-            value={deckSource === "daily" ? "daily" : week}
-            onChange={(e) => {
-              if (e.target.value === "daily") {
-                setDeckSource("daily")
-              } else {
-                setDeckSource("curriculum")
-                setWeek(Number(e.target.value))
-              }
-            }}
-            className="h-9 appearance-none rounded-xl border bg-card pr-8 pl-3 text-sm font-semibold focus:ring-2 focus:ring-ring focus:outline-none"
-            aria-label="Week filter"
-          >
-            {WEEKS.map((w) => (
-              <option key={w} value={w}>
-                Week {w}
-              </option>
-            ))}
-            <option value="daily">✦ Daily Words</option>
-          </select>
-          <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-xs text-muted-foreground">
-            ▾
-          </span>
-        </div>
+        {/* Daily Words toggle */}
+        <Button
+          variant={deckSource === "daily" ? "default" : "outline"}
+          size="sm"
+          onClick={() =>
+            setDeckSource((s) => (s === "daily" ? "curriculum" : "daily"))
+          }
+          className="rounded-xl text-xs font-semibold"
+        >
+          ✦ Daily Words
+        </Button>
+
+        {/* Week selector — only visible in curriculum mode */}
+        {deckSource === "curriculum" && (
+          <div className="relative">
+            <select
+              value={week}
+              onChange={(e) => setWeek(Number(e.target.value))}
+              className="h-9 appearance-none rounded-xl border bg-card pr-8 pl-3 text-sm font-semibold focus:ring-2 focus:ring-ring focus:outline-none"
+              aria-label="Week filter"
+            >
+              {WEEKS.map((w) => (
+                <option key={w} value={w}>
+                  Week {w}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-xs text-muted-foreground">
+              ▾
+            </span>
+          </div>
+        )}
 
         <Button
           variant="outline"
@@ -256,7 +262,11 @@ export function Flashcards({ learnedIds, onToggleLearned }: FlashcardsProps) {
           deviceId={deviceId}
           selectedDate={dailyDate}
           onSelectDate={(d) => setDailyDate(d)}
-          onWordsAdded={(words) => resetSession(words)}
+          onWordsAdded={(words) => {
+            setNoData(false)
+            setLoading(false)
+            resetSession(words)
+          }}
         />
       )}
 
